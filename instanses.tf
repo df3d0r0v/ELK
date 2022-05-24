@@ -24,7 +24,7 @@ resource "aws_instance" "elk_server" {
   subnet_id = aws_subnet.public.id
 
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${self.public_ip},' --private-key /var/lib/jenkins/.ssh/id_rsa ansible/nginx.yaml ansible/elk_stack.yaml"
+    command = "sleep 15; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${self.public_ip},' --private-key /var/lib/jenkins/.ssh/id_rsa ansible/nginx.yaml ansible/elk_stack.yaml"
   }
 }
 
