@@ -3,7 +3,7 @@ resource "aws_vpc" "elk_vpc" {
 
 
   tags = {
-    Name = "elk_vpc"
+    Name = "elk_vpc-${var.tag}"
   }
 }
 
@@ -17,7 +17,7 @@ resource "aws_internet_gateway" "igw" {
     vpc_id = "${aws_vpc.elk_vpc.id}"
 
     tags = {
-      Name = "igw"
+      Name = "igw-${var.tag}"
   }
 }
 
@@ -32,7 +32,7 @@ resource "aws_route_table" "public_crt" {
     }
     
     tags = {
-      Name = "main"
+      Name = "main-${var.tag}"
   }
 }
 

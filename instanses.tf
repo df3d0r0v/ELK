@@ -13,7 +13,7 @@ resource "aws_instance" "elk_server" {
   instance_type = var.instance_type
 
   tags = {
-    Name = "elk_server"
+    Name = "elk_server-${var.tag}"
   }
 
   key_name = "SSH"

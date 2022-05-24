@@ -7,6 +7,8 @@ Add AWS credentials in file ~/.aws/credentials
     aws_access_key_id=<ID>
     aws_secret_access_key=<ACCESS_KEY>
 
+Add ssh key in your AWS account with name SSH
+
 ### Deploy
 
     $> git clone https://github.com/df3d0r0v/ELK.git
@@ -14,7 +16,12 @@ Add AWS credentials in file ~/.aws/credentials
     $> terraform init
     $> terraform plan
     $> terraform apply
-    
+
+Elasic password is located in /home/ec2-user/elastic_passwd and in enviroment variable $ES_PWD
+
+    $> cat /home/ec2-user/elastic_passwd
+    $> echo $ES_PWD
+
 ### Destoroy 
 
     $> terraform destroy

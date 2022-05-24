@@ -19,7 +19,7 @@ resource "aws_security_group" "ssh" {
   }
 
   tags = {
-    Name = "allow_ssh"
+    Name = "allow_ssh-${var.tag}"
   }
 }
 
@@ -64,7 +64,7 @@ resource "aws_security_group" "elk_stack_sg" {
   }
 
   tags={
-    Name="elk_stack_sg"
+    Name="elk_stack_sg-${var.tag}"
   }
 }
 
@@ -90,6 +90,6 @@ resource "aws_security_group" "nginx_sg" {
   }
   
   tags={
-      Name="nginx_sg"
+      Name="nginx_sg-${var.tag}"
     }
 }
