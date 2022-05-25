@@ -17,15 +17,20 @@ Add ssh key in your AWS account with name SSH
     $> terraform plan
     $> terraform apply
 
-Elasic password is located in /home/ec2-user/elastic_passwd and in enviroment variable $ES_PWD
-
-    $> cat /home/ec2-user/elastic_passwd
-    $> echo $ES_PWD
-
 ### Destoroy 
 
     $> terraform destroy
 
-### Ad-hoc ansible
+### Ad-hoc commands and troubleshooting 
 
-    ansible-playbook ansible/nginx.yaml ansible/elk_stack.yaml -i 52.58.17.1,
+    $> ansible-playbook ansible/nginx.yaml ansible/elk_stack.yaml -i <IP>,
+
+Elasic password is located in /home/ec2-user/elastic_passwd and in enviroment variable $ES_PWD
+
+    $> cat /home/ec2-user/elastic_passwd
+    $> echo $ES_PWD
+    
+Logstash status and logs
+
+    $> systemctl status logstash.service
+    $> tail -f /var/log/logstash/logstash-plain.log
