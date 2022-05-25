@@ -1,3 +1,78 @@
+data "aws_ami" "amazon-linux-2" {
+ owners = ["amazon"]
+ most_recent = true
+
+ filter {
+   name   = "name"
+   values = ["amzn2-ami-hvm*"]
+ }
+}
+
+resource "aws_instance" "elk_server" {
+  ami           = "${data.aws_ami.amazon-linux-2.id}"
+  instance_type = var.instance_type
+
+  tags = {
+    Name = "elk_server-${var.tag}"
+  }
+
+  key_name = "SSH"
+
+  associate_public_ip_address = "true"
+
+  vpc_security_group_ids = [aws_security_group.ssh.id, aws_security_group.elk_stack_sg.id, aws_security_group.nginx_sg.id]
+  subnet_id = aws_subnet.public.id
+
+  provisioner "local-exec" {
+    command = "sleep 15; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${self.public_ip},' --private-key /var/lib/jenkins/.ssh/id_rsa ./ansible/nginx.yaml ./ansible/elk_stack.yaml"
+  }
+}
+
+
+resource "aws_vpc" "elk_vpc" {
+  cidr_block = "10.0.0.0/16"
+
+
+  tags = {
+    Name = "elk_vpc-${var.tag}"
+  }
+}
+
+resource "aws_subnet" "public" {
+  cidr_block = "${cidrsubnet(aws_vpc.elk_vpc.cidr_block, 3, 1)}"
+  vpc_id = "${aws_vpc.elk_vpc.id}"
+  availability_zone = "eu-central-1a"
+}
+
+resource "aws_internet_gateway" "igw" {
+    vpc_id = "${aws_vpc.elk_vpc.id}"
+
+    tags = {
+      Name = "igw-${var.tag}"
+  }
+}
+
+resource "aws_route_table" "public_crt" {
+    vpc_id = "${aws_vpc.elk_vpc.id}"
+    
+    route {
+        //associated subnet can reach everywhere
+        cidr_block = "0.0.0.0/0" 
+        //CRT uses this IGW to reach internet
+        gateway_id = "${aws_internet_gateway.igw.id}" 
+    }
+    
+    tags = {
+      Name = "main-${var.tag}"
+  }
+}
+
+resource "aws_route_table_association" "crta_public"{
+    subnet_id = "${aws_subnet.public.id}"
+    route_table_id = "${aws_route_table.public_crt.id}"
+}
+
+
 resource "aws_security_group" "ssh" {
   name        = "allow_ssh"
   description = "Allow ssh inbound traffic"
