@@ -1,7 +1,7 @@
 pipeline {
     agent any
      parameters {
-        string(name: 'Tag', defaultValue: '1.1.0', description: 'Git tag')
+        string(name: 'Tag', defaultValue: '1.1.2', description: 'Git tag')
     }
     stages {
         stage('deloy elk') {
