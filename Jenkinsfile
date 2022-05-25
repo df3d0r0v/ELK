@@ -1,7 +1,7 @@
 pipeline {
     agent any
      parameters {
-        string(name: 'Tag', defaultValue: '1.1.2', description: 'Git tag')
+        string(name: 'Tag', defaultValue: '1.1.3', description: 'Git tag')
     }
     stages {
         stage('deloy elk') {
@@ -14,9 +14,7 @@ pipeline {
                         terraform plan -var="tag=${Tag}"
                         terraform apply -auto-approve -var="tag=${Tag}"
 
-                        cat JENKINS_HOME/jobs/$JOB_NAME/builds/lastSuccessfulBuild/log > JENKINS_HOME/changelog
-
-                        sleep 1000
+                        sleep 500
                         terraform destroy -auto-approve -var="tag=${Tag}"
                     '''
             }
