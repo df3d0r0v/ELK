@@ -34,3 +34,7 @@ Logstash status and logs
 
     $> systemctl status logstash.service
     $> tail -f /var/log/logstash/logstash-plain.log
+    
+Add logs for nginx
+
+    $> curl 127.0.0.1
