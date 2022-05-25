@@ -28,4 +28,4 @@ Elasic password is located in /home/ec2-user/elastic_passwd and in enviroment va
 
 ### Ad-hoc ansible
 
-    ansible-playbook ansible/nginx.yaml ansible/elk_stack.yaml -i 52.58.17.1,
+    ansible-playbook ansible/nginx.yaml ansible/elk_stack.yaml -i <IP>,
