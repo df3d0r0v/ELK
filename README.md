@@ -25,3 +25,7 @@ Elasic password is located in /home/ec2-user/elastic_passwd and in enviroment va
 ### Destoroy 
 
     $> terraform destroy
+
+### Ad-hoc ansible
+
+    ansible-playbook ansible/nginx.yaml ansible/elk_stack.yaml -i 52.58.17.1,
