@@ -1,34 +1,3 @@
-data "aws_ami" "amazon-linux-2" {
- owners = ["amazon"]
- most_recent = true
-
- filter {
-   name   = "name"
-   values = ["amzn2-ami-hvm*"]
- }
-}
-
-resource "aws_instance" "elk_server" {
-  ami           = "${data.aws_ami.amazon-linux-2.id}"
-  instance_type = var.instance_type
-
-  tags = {
-    Name = "elk_server-${var.tag}"
-  }
-
-  key_name = "SSH"
-
-  associate_public_ip_address = "true"
-
-  vpc_security_group_ids = [aws_security_group.ssh.id, aws_security_group.elk_stack_sg.id, aws_security_group.nginx_sg.id]
-  subnet_id = aws_subnet.public.id
-
-  provisioner "local-exec" {
-    command = "sleep 15; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${self.public_ip},' --private-key /var/lib/jenkins/.ssh/id_rsa ./ansible/nginx.yaml ./ansible/elk_stack.yaml"
-  }
-}
-
-
 resource "aws_vpc" "elk_vpc" {
   cidr_block = "10.0.0.0/16"
 
@@ -72,6 +41,32 @@ resource "aws_route_table_association" "crta_public"{
     route_table_id = "${aws_route_table.public_crt.id}"
 }
 
+resource "aws_network_acl" "main" {
+  vpc_id = aws_vpc.elk_vpc.id
+
+  egress {
+    protocol   = "-1"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+
+  ingress {
+    protocol   = "-1"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+  
+
+  tags = {
+    Name = "main${var.tag}"
+  }
+}
 
 resource "aws_security_group" "ssh" {
   name        = "allow_ssh"
@@ -167,4 +162,36 @@ resource "aws_security_group" "nginx_sg" {
   tags={
       Name="nginx_sg-${var.tag}"
     }
+}
+
+
+
+data "aws_ami" "amazon-linux-2" {
+ owners = ["amazon"]
+ most_recent = true
+
+ filter {
+   name   = "name"
+   values = ["amzn2-ami-hvm*"]
+ }
+}
+
+resource "aws_instance" "elk_server" {
+  ami           = "${data.aws_ami.amazon-linux-2.id}"
+  instance_type = var.instance_type
+
+  tags = {
+    Name = "elk_server-${var.tag}"
+  }
+
+  key_name = "SSH"
+
+  associate_public_ip_address = "true"
+
+  vpc_security_group_ids = [aws_security_group.ssh.id, aws_security_group.elk_stack_sg.id, aws_security_group.nginx_sg.id]
+  subnet_id = aws_subnet.public.id
+
+  provisioner "local-exec" {
+    command = "sleep 15; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${self.public_ip},' ./ansible/playbook.yaml"
+  }
 }
